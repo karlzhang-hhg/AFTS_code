@@ -1,0 +1,107 @@
+trying URL 'https://cran.r-project.org/src/contrib/highr_0.10.tar.gz'
+Content type 'application/x-gzip' length 15084 bytes (14 KB)
+==================================================
+downloaded 14 KB
+
+trying URL 'https://cran.r-project.org/src/contrib/xfun_0.42.tar.gz'
+Content type 'application/x-gzip' length 142598 bytes (139 KB)
+==================================================
+downloaded 139 KB
+
+trying URL 'https://cran.r-project.org/src/contrib/yaml_2.3.8.tar.gz'
+Content type 'application/x-gzip' length 94764 bytes (92 KB)
+==================================================
+downloaded 92 KB
+
+trying URL 'https://cran.r-project.org/src/contrib/knitr_1.45.tar.gz'
+Content type 'application/x-gzip' length 898762 bytes (877 KB)
+==================================================
+downloaded 877 KB
+
+* installing *source* package ‘xfun’ ...
+** package ‘xfun’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘clang version 17.0.6’
+using SDK: ‘MacOSX12.1.sdk’
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG   -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c base64.c -o base64.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG   -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c init.c -o init.o
+clang -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Users/karlzhang/miniforge3/envs/JTR/lib/R/lib -Wl,-dead_strip_dylibs -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/karlzhang/miniforge3/envs/JTR/lib -L/Users/karlzhang/miniforge3/envs/JTR/lib -o xfun.dylib base64.o init.o -L/Users/karlzhang/miniforge3/envs/JTR/lib/R/lib -lR -Wl,-framework -Wl,CoreFoundation
+ld: warning: -pie being ignored. It is only used when linking a main executable
+installing to /Users/karlzhang/miniforge3/envs/JTR/lib/R/library/00LOCK-xfun/00new/xfun/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (xfun)
+* installing *source* package ‘yaml’ ...
+** package ‘yaml’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘clang version 17.0.6’
+using SDK: ‘MacOSX12.1.sdk’
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c api.c -o api.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c dumper.c -o dumper.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c emitter.c -o emitter.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c implicit.c -o implicit.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c loader.c -o loader.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c parser.c -o parser.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c r_emit.c -o r_emit.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c r_ext.c -o r_ext.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c r_parse.c -o r_parse.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c reader.c -o reader.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c scanner.c -o scanner.o
+clang -I"/Users/karlzhang/miniforge3/envs/JTR/lib/R/include" -DNDEBUG -I. -DNDEBUG  -D_FORTIFY_SOURCE=2 -isystem /Users/karlzhang/miniforge3/envs/JTR/include -mmacosx-version-min=10.9 -I/Users/karlzhang/miniforge3/envs/JTR/include    -fPIC  -march=core2 -mtune=haswell -mssse3 -ftree-vectorize -fPIC -fPIE -fstack-protector-strong -O2 -pipe -isystem /Users/karlzhang/miniforge3/envs/JTR/include -fdebug-prefix-map=/Users/runner/miniforge3/conda-bld/r-base-split_1695319683304/work=/usr/local/src/conda/r-base-4.3.1 -fdebug-prefix-map=/Users/karlzhang/miniforge3/envs/JTR=/usr/local/src/conda-prefix  -c writer.c -o writer.o
+clang -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress -L/Users/karlzhang/miniforge3/envs/JTR/lib/R/lib -Wl,-dead_strip_dylibs -Wl,-pie -Wl,-headerpad_max_install_names -Wl,-dead_strip_dylibs -Wl,-rpath,/Users/karlzhang/miniforge3/envs/JTR/lib -L/Users/karlzhang/miniforge3/envs/JTR/lib -o yaml.dylib api.o dumper.o emitter.o implicit.o loader.o parser.o r_emit.o r_ext.o r_parse.o reader.o scanner.o writer.o -L/Users/karlzhang/miniforge3/envs/JTR/lib/R/lib -lR -Wl,-framework -Wl,CoreFoundation
+ld: warning: -pie being ignored. It is only used when linking a main executable
+installing to /Users/karlzhang/miniforge3/envs/JTR/lib/R/library/00LOCK-yaml/00new/yaml/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (yaml)
+* installing *source* package ‘highr’ ...
+** package ‘highr’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (highr)
+* installing *source* package ‘knitr’ ...
+** package ‘knitr’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** demo
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (knitr)
+
+The downloaded source packages are in
+        ‘/private/var/folders/z_/18m93nmn7v56ntd09hcr4h080000gp/T/Rtmpsr5FOs/downloaded_packages’
