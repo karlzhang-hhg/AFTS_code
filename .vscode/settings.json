@@ -1,0 +1,7 @@
+{
+    "editor.defaultFormatter": "REditorSupport.r",
+    "editor.formatOnSave": true,
+    "[r]": {
+        "editor.defaultFormatter": "REditorSupport.r-lsp"
+    },
+}
