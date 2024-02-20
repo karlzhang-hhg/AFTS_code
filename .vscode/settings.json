@@ -2,6 +2,8 @@
     "editor.defaultFormatter": "REditorSupport.r",
     "editor.formatOnSave": true,
     "[r]": {
-        "editor.defaultFormatter": "REditorSupport.r-lsp"
+        "editor.defaultFormatter": "REditorSupport.r"
     },
+    "r.lsp.diagnostics": false,
+    "r.lsp.enabled": false,
 }
