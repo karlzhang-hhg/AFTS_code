@@ -11,9 +11,11 @@ plot_forecast_fig(
   npts,
   frequency,
   order,
+  seasonal,
   fixed,
   method,
-  transform_pars,
+  include.mean,
+  transform.pars,
   main,
   xlab,
   ylab,
@@ -37,7 +39,7 @@ plot_forecast_fig(
 
 \item{method}{ARIMA param.}
 
-\item{transform_pars}{ARIMA param.}
+\item{transform.pars}{ARIMA param.}
 
 \item{main}{The title of the figure.}
 

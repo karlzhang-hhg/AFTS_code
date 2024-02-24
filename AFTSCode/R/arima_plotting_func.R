@@ -72,7 +72,7 @@ get_mu <- function(arima_mod, digits = 6) {
 #' @param order ARIMA param.
 #' @param fixed ARIMA param.
 #' @param method ARIMA param.
-#' @param transform_pars ARIMA param.
+#' @param transform.pars ARIMA param.
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
@@ -80,15 +80,21 @@ get_mu <- function(arima_mod, digits = 6) {
 #' @export
 plot_forecast_fig <- function(
     da_ts, eotr, h, npts, frequency,
-    order, fixed, method, transform_pars,
-    main, xlab, ylab, ylim = NULL) {
+    order, seasonal, fixed, method, include.mean, transform.pars,
+    main, xlab, ylab, ylim = NULL
+) {
     par(bg = "white")
     # arima model
     tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
-    if (is.null(transform_pars)) {
-        ts_fm3 <- arima(tr_da_ts, order = order, fixed = fixed, method = method)
+    if (is.null(transform.pars)) {
+        ts_fm3 <- arima(tr_da_ts, order = order, fixed = fixed, 
+            seasonal = seasonal, method = method, include.mean = include.mean
+        )
     } else {
-        ts_fm3 <- arima(tr_da_ts, order = order, fixed = fixed, method = method, transform.pars = transform_pars)
+        ts_fm3 <- arima(tr_da_ts, order = order, fixed = fixed, 
+            seasonal = seasonal, method = method, include.mean = include.mean, 
+            transform.pars = transform.pars
+        )
     }
     print(ts_fm3$nobs)
     # Forecast
@@ -103,11 +109,11 @@ plot_forecast_fig <- function(
     cat(xmin, ";", xmax)
 
     plot(ts_fc_res, xlim = c(xmin, xmax), ylim = ylim, main = main, xlab = xlab, ylab = ylab)
-    # Plot forecast mean
+    # Plot forecast mean (prepend the last observed data in the training dataset)
     dummy_1st_fmean_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$mean)), frequency = frequency, start = end(tr_da_ts))
     lines(dummy_1st_fmean_ts)
     points(dummy_1st_fmean_ts, pch = 1)
-    # Plot confidence interval
+    # Plot confidence interval (95%)
     dummy_1st_flower_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$lower[, 2])), frequency = frequency, start = end(tr_da_ts))
     dummy_1st_fupper_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$upper[, 2])), frequency = frequency, start = end(tr_da_ts))
     lines(dummy_1st_flower_ts, lty = 2)
@@ -155,4 +161,21 @@ plot_unit_root_figs <- function(da_ts, freq, start, lag_max, main, xlab, ylab) {
     acf(da_ts, lag.max = 20)
     plot_time_fig(diff_da_ts, main = main, xlab = xlab, ylab = paste("diff(", ylab, ")", sep = ""))
     pacf(diff_da_ts, lag.max = 20)
+}
+
+#' Plot acf of a time-series.
+#'
+#' @param da An data series.
+#' @param lag.max An acf param.
+#' @param main The title of the figure.
+#' @param w Plot width.
+#' @param h Plot height.
+#' @export
+plot_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
+    if (is.null(w) | is.null(h)) {
+        par(bg = 'white')
+    } else {
+        par(bg = 'white', pin = c(w, h))
+    }
+    plot(acf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
 }
