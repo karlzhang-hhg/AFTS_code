@@ -107,21 +107,37 @@ plot_forecast_fig <- function(
     xmin <- time(da_ts)[eotr] - npts / frequency
     xmax <- time(da_ts)[eotr] + (max(h, length(da_ts) - eotr) + 1) / frequency
     cat(xmin, ";", xmax)
-
+    # # Label 1: Actual Observation Line
     plot(ts_fc_res, xlim = c(xmin, xmax), ylim = ylim, main = main, xlab = xlab, ylab = ylab)
     # Plot forecast mean (prepend the last observed data in the training dataset)
     dummy_1st_fmean_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$mean)), frequency = frequency, start = end(tr_da_ts))
+    # # Label -: NULL
     lines(dummy_1st_fmean_ts)
+    # # Label 2: Forecast Mean
     points(dummy_1st_fmean_ts, pch = 1)
     # Plot confidence interval (95%)
     dummy_1st_flower_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$lower[, 2])), frequency = frequency, start = end(tr_da_ts))
     dummy_1st_fupper_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$upper[, 2])), frequency = frequency, start = end(tr_da_ts))
+    # # Label 3: Forecast 95% Lower Bound
     lines(dummy_1st_flower_ts, lty = 2)
+    # # Label 4: Forecast 95% Upper Bound
     lines(dummy_1st_fupper_ts, lty = 2)
     # Plot original data
     orig_plot_ts <- ts(da_ts[(eotr - npts + 1):length(da_ts)], frequency = frequency, start = time(da_ts)[eotr] - (npts - 1) / frequency)
+    # # Label -: NULL
     lines(orig_plot_ts)
+    # # Label 5: Actual Observation Points
     points(orig_plot_ts, pch = 19)
+    legend(
+        "topleft", 
+        legend = c(
+            "Actual Obs Line", NULL, "Forecast Mean", "Forecast 95% Lower Bound",
+            "Forecast 95% Upper Bound", NULL, "Actual Obs"
+        ), 
+        # col = c("black", "red", "blue"), 
+        lty = c(1, NA, 2, 2, NA),
+        pch = c(NA, 1, NA, NA, 19)
+    )
     ts_fc_res
 }
 
