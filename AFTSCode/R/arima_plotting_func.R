@@ -85,6 +85,7 @@ plot_forecast_fig <- function(
 ) {
     par(bg = "white")
     # arima model
+    if (is.null(seasonal)) {seasonal = list(order = c(0L, 0L, 0L), period = NA)} # default value
     tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
     if (is.null(transform.pars)) {
         ts_fm3 <- arima(tr_da_ts, order = order, fixed = fixed, 
@@ -194,4 +195,22 @@ plot_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
         par(bg = 'white', pin = c(w, h))
     }
     plot(acf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
+}
+
+#' Perform and print eacf of a time-series.
+#'
+#' @param da An data series.
+#' @param ar.max An eacf param.
+#' @param ma.max An eacf param.
+#' @import TSA IRdisplay
+#' @export
+perform_and_print_eacf <- function(da, ar.max, ma.max) {
+    eacf_obj <- eacf(da, ar.max = ar.max, ma.max = ma.max)
+    eacf_stats_tb = format(as.data.frame(eacf_obj$eacf), digits = 3)
+    names(eacf_stats_tb) <- seq(from = 0, to = ma.max)
+    display(eacf_stats_tb)
+    display(eacf_obj$symbol)
+    # pp67, asymptotic standard error of EACF
+    display(2/sqrt(length(da)))
+    c(eacf_obj, eacf_stats_tb)
 }
