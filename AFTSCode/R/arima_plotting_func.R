@@ -135,6 +135,7 @@ draw_arima_forecast_fig <- function(
 #' @param method arima param.
 #' @param include.mean arima param.
 #' @param transform.pars arima param.
+#' @param gof The lag for ts result diagnosis (35).
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
@@ -145,7 +146,7 @@ draw_arima_forecast_fig <- function(
 plot_arima_forecast_fig <- function(
     da_ts, eotr, h, npts, frequency,
     order, seasonal, fixed, method, 
-    include.mean, transform.pars,
+    include.mean, transform.pars, gof=35,
     main=NULL, xlab=NULL, ylab=NULL, ylim = NULL,
     ts_fc_res=NULL
 ) {
@@ -167,6 +168,7 @@ plot_arima_forecast_fig <- function(
         # Forecast
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
         ts_fc_res <- forecast(ts_fm, h = h)
+        tsdiag(ew_fc_res$model, gof = gof)
     }
     draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
@@ -180,6 +182,7 @@ plot_arima_forecast_fig <- function(
 #' @param npts The number of points at the end of training data to plot.
 #' @param frequency The frequency of the ts object.
 #' @param xreg arima param (data.frame).
+#' @param gof The lag for ts result diagnosis (35).
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
@@ -189,8 +192,8 @@ plot_arima_forecast_fig <- function(
 #' @import forecast
 #' @export
 plot_auto_arima_forecast_fig <- function(
-    da_ts, eotr, h, npts, frequency,
-    xreg=NULL, main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res = NULL,
+    da_ts, eotr, h, npts, frequency, xreg=NULL, 
+    gof=35, main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res = NULL,
     ...
 ) {
     if (is.null(ts_fc_res)) {
@@ -211,6 +214,7 @@ plot_auto_arima_forecast_fig <- function(
         # Forecast
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
         ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
+        tsdiag(ew_fc_res$model, gof = gof)
     }
     draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
@@ -268,7 +272,7 @@ plot_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
     } else {
         par(bg = 'white', pin = c(w, h))
     }
-    plot(acf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
+    plot(acf(da, lag.max = lag.max, plot = F, ...), main = main)
 }
 
 #' Plot pacf and acf of a time-series.
@@ -285,8 +289,8 @@ plot_pacf_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
     } else {
         par(mfrow = c(2, 1), bg = 'white', pin = c(w, h))
     }
-    plot(pacf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
-    plot(acf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
+    plot(pacf(da, lag.max = lag.max, plot = F, ...), main = main)
+    plot(acf(da, lag.max = lag.max, plot = F, ...), main = main)
 }
 
 #' Perform and print eacf of a time-series.

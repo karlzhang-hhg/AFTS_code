@@ -16,6 +16,7 @@ plot_arima_forecast_fig(
   method,
   include.mean,
   transform.pars,
+  gof = 35,
   main = NULL,
   xlab = NULL,
   ylab = NULL,
@@ -45,6 +46,8 @@ plot_arima_forecast_fig(
 \item{include.mean}{arima param.}
 
 \item{transform.pars}{arima param.}
+
+\item{gof}{The lag for ts result diagnosis (35).}
 
 \item{main}{The title of the figure.}
 
