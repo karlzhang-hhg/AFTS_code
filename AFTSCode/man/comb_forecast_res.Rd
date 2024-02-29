@@ -2,7 +2,7 @@
 % Please edit documentation in R/arima_plotting_func.R
 \name{comb_forecast_res}
 \alias{comb_forecast_res}
-\title{Get \mu from ARIMA model.}
+\title{Combine forecast results.}
 \usage{
 comb_forecast_res(forecast_obj, da_ts, eotr, freq)
 }
@@ -16,5 +16,5 @@ comb_forecast_res(forecast_obj, da_ts, eotr, freq)
 \item{freq}{The frequency of the ts object.}
 }
 \description{
-Get \mu from ARIMA model.
+Combine forecast results.
 }

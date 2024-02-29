@@ -62,7 +62,67 @@ get_mu <- function(arima_mod, digits = 6) {
     mu
 }
 
-#' Get \mu from ARIMA model.
+#' Draw a ARIMA model and plot forecast results.
+#' 
+#' @param da_ts A ts object.
+#' @param eotr The end index of training data.
+#' @param h The forecast horizon.
+#' @param npts The number of points at the end of training data to plot.
+#' @param frequency The frequency of the ts object.
+#' @param main The title of the figure.
+#' @param xlab xlab.
+#' @param ylab ylab.
+#' @param ylim ylim.
+#' @param ts_fc_res An object already fit.
+#' @import forecast
+#' @export
+draw_arima_forecast_fig <- function(
+    da_ts, eotr, h, npts, frequency, ts_fc_res,
+    main=NULL, xlab=NULL, ylab=NULL, ylim = NULL
+) {
+    # Plot forecast
+    par(bg = "white")
+    if (is.null(npts)) {
+        npts <- eotr
+    }
+    xmin <- time(da_ts)[eotr] - npts / frequency
+    xmax <- time(da_ts)[eotr] + (max(h, length(da_ts) - eotr) + 1) / frequency
+    cat(xmin, ";", xmax)
+    tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
+    # # Label 1: Actual Observation Line
+    plot(ts_fc_res, xlim = c(xmin, xmax), ylim = ylim, main = main, xlab = xlab, ylab = ylab)
+    # Plot forecast mean (prepend the last observed data in the training dataset)
+    dummy_1st_fmean_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$mean)), frequency = frequency, start = end(tr_da_ts))
+    # # Label -: NULL
+    lines(dummy_1st_fmean_ts)
+    # # Label 2: Forecast Mean
+    points(dummy_1st_fmean_ts, pch = 1)
+    # Plot confidence interval (95%)
+    dummy_1st_flower_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$lower[, 2])), frequency = frequency, start = end(tr_da_ts))
+    dummy_1st_fupper_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$upper[, 2])), frequency = frequency, start = end(tr_da_ts))
+    # # Label 3: Forecast 95% Lower Bound
+    lines(dummy_1st_flower_ts, lty = 2)
+    # # Label 4: Forecast 95% Upper Bound
+    lines(dummy_1st_fupper_ts, lty = 2)
+    # Plot original data
+    orig_plot_ts <- ts(da_ts[(eotr - npts + 1):length(da_ts)], frequency = frequency, start = time(da_ts)[eotr] - (npts - 1) / frequency)
+    # # Label -: NULL
+    lines(orig_plot_ts)
+    # # Label 5: Actual Observation Points
+    points(orig_plot_ts, pch = 19)
+    legend(
+        "topleft", 
+        legend = c(
+            "Actual Obs Line", NULL, "Forecast Mean", "Forecast 95% Lower Bound",
+            "Forecast 95% Upper Bound", NULL, "Actual Obs"
+        ), 
+        # col = c("black", "red", "blue"), 
+        lty = c(1, NA, 2, 2, NA),
+        pch = c(NA, 1, NA, NA, 19)
+    )
+}
+
+#' Fit a ARIMA model and plot forecast results.
 #'
 #' @param da_ts A ts object.
 #' @param eotr The end index of training data.
@@ -78,74 +138,41 @@ get_mu <- function(arima_mod, digits = 6) {
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
+#' @param ylim ylim.
+#' @param ts_fc_res An object already fit.
 #' @import forecast
 #' @export
 plot_arima_forecast_fig <- function(
     da_ts, eotr, h, npts, frequency,
     order, seasonal, fixed, method, 
     include.mean, transform.pars,
-    main=NULL, xlab=NULL, ylab=NULL, ylim = NULL
+    main=NULL, xlab=NULL, ylab=NULL, ylim = NULL,
+    ts_fc_res=NULL
 ) {
-    par(bg = "white")
-    # arima model
-    if (is.null(seasonal)) {seasonal = list(order = c(0L, 0L, 0L), period = NA)} # default value
-    tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
-    if (is.null(transform.pars)) {
-        ts_fm <- arima(tr_da_ts, order = order, fixed = fixed, 
-            seasonal = seasonal, method = method, include.mean = include.mean
-        )
-    } else {
-        ts_fm <- arima(tr_da_ts, order = order, fixed = fixed, 
-            seasonal = seasonal, method = method, include.mean = include.mean, 
-            transform.pars = transform.pars
-        )
+    if (is.null(ts_fc_res)) {
+        # arima model
+        if (is.null(seasonal)) {seasonal = list(order = c(0L, 0L, 0L), period = NA)} # default value
+        tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
+        if (is.null(transform.pars)) {
+            ts_fm <- arima(tr_da_ts, order = order, fixed = fixed, 
+                seasonal = seasonal, method = method, include.mean = include.mean
+            )
+        } else {
+            ts_fm <- arima(tr_da_ts, order = order, fixed = fixed, 
+                seasonal = seasonal, method = method, include.mean = include.mean, 
+                transform.pars = transform.pars
+            )
+        }
+        print(ts_fm$nobs)
+        # Forecast
+        ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
+        ts_fc_res <- forecast(ts_fm, h = h)
     }
-    print(ts_fm$nobs)
-    # Forecast
-    ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
-    ts_fc_res <- forecast(ts_fm, h = h)
-    # Plot forecast
-    if (is.null(npts)) {
-        npts <- eotr
-    }
-    xmin <- time(da_ts)[eotr] - npts / frequency
-    xmax <- time(da_ts)[eotr] + (max(h, length(da_ts) - eotr) + 1) / frequency
-    cat(xmin, ";", xmax)
-    # # Label 1: Actual Observation Line
-    plot(ts_fc_res, xlim = c(xmin, xmax), ylim = ylim, main = main, xlab = xlab, ylab = ylab)
-    # Plot forecast mean (prepend the last observed data in the training dataset)
-    dummy_1st_fmean_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$mean)), frequency = frequency, start = end(tr_da_ts))
-    # # Label -: NULL
-    lines(dummy_1st_fmean_ts)
-    # # Label 2: Forecast Mean
-    points(dummy_1st_fmean_ts, pch = 1)
-    # Plot confidence interval (95%)
-    dummy_1st_flower_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$lower[, 2])), frequency = frequency, start = end(tr_da_ts))
-    dummy_1st_fupper_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$upper[, 2])), frequency = frequency, start = end(tr_da_ts))
-    # # Label 3: Forecast 95% Lower Bound
-    lines(dummy_1st_flower_ts, lty = 2)
-    # # Label 4: Forecast 95% Upper Bound
-    lines(dummy_1st_fupper_ts, lty = 2)
-    # Plot original data
-    orig_plot_ts <- ts(da_ts[(eotr - npts + 1):length(da_ts)], frequency = frequency, start = time(da_ts)[eotr] - (npts - 1) / frequency)
-    # # Label -: NULL
-    lines(orig_plot_ts)
-    # # Label 5: Actual Observation Points
-    points(orig_plot_ts, pch = 19)
-    legend(
-        "topleft", 
-        legend = c(
-            "Actual Obs Line", NULL, "Forecast Mean", "Forecast 95% Lower Bound",
-            "Forecast 95% Upper Bound", NULL, "Actual Obs"
-        ), 
-        # col = c("black", "red", "blue"), 
-        lty = c(1, NA, 2, 2, NA),
-        pch = c(NA, 1, NA, NA, 19)
-    )
+    draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
 }
 
-#' Get \mu from ARIMA model.
+#' Fit a ARIMA model using auto.arima and plot forecast results.
 #'
 #' @param da_ts A ts object.
 #' @param eotr The end index of training data.
@@ -156,73 +183,40 @@ plot_arima_forecast_fig <- function(
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
+#' @param ylim ylim.
+#' @param ts_fc_res An object already fit.
 #' @param ... auto.arima params.
 #' @import forecast
 #' @export
 plot_auto_arima_forecast_fig <- function(
     da_ts, eotr, h, npts, frequency,
-    xreg=NULL, main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ...
+    xreg=NULL, main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res = NULL,
+    ...
 ) {
-    par(bg = "white")
-    # arima model
-    if (is.null(seasonal)) {seasonal = list(order = c(0L, 0L, 0L), period = NA)} # default value
-    tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
-    if (is.null(xreg)) {
-        tr_xreg <- NULL
-        fc_xreg <- NULL
-    } else {
-        stopifnot("xreg should be of type matrix"=(is.matrix(xreg)))
-        stopifnot("length(da_ts)!=dim(xreg)[1]"=(length(da_ts)==dim(xreg)[1]))
-        tr_xreg <- xreg[1:eotr]
-        fc_xreg <- xreg[(eotr+1):dim(xreg)[1]]
+    if (is.null(ts_fc_res)) {
+        if (is.null(xreg)) {
+            tr_xreg <- NULL
+            fc_xreg <- NULL
+        } else {
+            stopifnot("xreg should be of type matrix"=(is.matrix(xreg)))
+            stopifnot("length(da_ts)!=dim(xreg)[1]"=(length(da_ts)==dim(xreg)[1]))
+            tr_xreg <- xreg[1:eotr]
+            fc_xreg <- xreg[(eotr+1):dim(xreg)[1]]
+        }
+        # arima model
+        if (is.null(seasonal)) {seasonal = list(order = c(0L, 0L, 0L), period = NA)} # default value
+        tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
+        ts_fm <- auto.arima(tr_da_ts, xreg = tr_xreg, ...)
+        print(ts_fm$nobs)
+        # Forecast
+        ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
+        ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
     }
-    ts_fm <- auto.arima(tr_da_ts, xreg = tr_xreg, ...)
-    print(ts_fm$nobs)
-    # Forecast
-    ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
-    ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
-    # Plot forecast
-    if (is.null(npts)) {
-        npts <- eotr
-    }
-    xmin <- time(da_ts)[eotr] - npts / frequency
-    xmax <- time(da_ts)[eotr] + (max(h, length(da_ts) - eotr) + 1) / frequency
-    cat(xmin, ";", xmax)
-    # # Label 1: Actual Observation Line
-    plot(ts_fc_res, xlim = c(xmin, xmax), ylim = ylim, main = main, xlab = xlab, ylab = ylab)
-    # Plot forecast mean (prepend the last observed data in the training dataset)
-    dummy_1st_fmean_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$mean)), frequency = frequency, start = end(tr_da_ts))
-    # # Label -: NULL
-    lines(dummy_1st_fmean_ts)
-    # # Label 2: Forecast Mean
-    points(dummy_1st_fmean_ts, pch = 1)
-    # Plot confidence interval (95%)
-    dummy_1st_flower_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$lower[, 2])), frequency = frequency, start = end(tr_da_ts))
-    dummy_1st_fupper_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$upper[, 2])), frequency = frequency, start = end(tr_da_ts))
-    # # Label 3: Forecast 95% Lower Bound
-    lines(dummy_1st_flower_ts, lty = 2)
-    # # Label 4: Forecast 95% Upper Bound
-    lines(dummy_1st_fupper_ts, lty = 2)
-    # Plot original data
-    orig_plot_ts <- ts(da_ts[(eotr - npts + 1):length(da_ts)], frequency = frequency, start = time(da_ts)[eotr] - (npts - 1) / frequency)
-    # # Label -: NULL
-    lines(orig_plot_ts)
-    # # Label 5: Actual Observation Points
-    points(orig_plot_ts, pch = 19)
-    legend(
-        "topleft", 
-        legend = c(
-            "Actual Obs Line", NULL, "Forecast Mean", "Forecast 95% Lower Bound",
-            "Forecast 95% Upper Bound", NULL, "Actual Obs"
-        ), 
-        # col = c("black", "red", "blue"), 
-        lty = c(1, NA, 2, 2, NA),
-        pch = c(NA, 1, NA, NA, 19)
-    )
+    draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
 }
 
-#' Get \mu from ARIMA model.
+#' Combine forecast results.
 #'
 #' @param forecast_obj A forecast object.
 #' @param da_ts An original ts object.
@@ -241,7 +235,7 @@ comb_forecast_res <- function(forecast_obj, da_ts, eotr, freq) {
     multistep_ahead_forecast_tb
 }
 
-#' Get \mu from ARIMA model.
+#' Plot ACF and PACF for unit-roots testing.
 #'
 #' @param da_ts An original ts object.
 #' @param freq The frequency of the ts object.
@@ -274,6 +268,24 @@ plot_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
     } else {
         par(bg = 'white', pin = c(w, h))
     }
+    plot(acf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
+}
+
+#' Plot pacf and acf of a time-series.
+#'
+#' @param da An data series.
+#' @param lag.max An acf param.
+#' @param main The title of the figure.
+#' @param w Plot width.
+#' @param h Plot height.
+#' @export
+plot_pacf_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
+    if (is.null(w) | is.null(h)) {
+        par(mfrow = c(2, 1), bg = 'white')
+    } else {
+        par(mfrow = c(2, 1), bg = 'white', pin = c(w, h))
+    }
+    plot(pacf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
     plot(acf(da, lag.max = lag.max, plot = F, `drop.lag.0` = F, ...), main = main)
 }
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/arima_plotting_func.R
 \name{plot_auto_arima_forecast_fig}
 \alias{plot_auto_arima_forecast_fig}
-\title{Get \mu from ARIMA model.}
+\title{Fit a ARIMA model using auto.arima and plot forecast results.}
 \usage{
 plot_auto_arima_forecast_fig(
   da_ts,
@@ -15,6 +15,7 @@ plot_auto_arima_forecast_fig(
   xlab = NULL,
   ylab = NULL,
   ylim = NULL,
+  ts_fc_res = NULL,
   ...
 )
 }
@@ -37,8 +38,12 @@ plot_auto_arima_forecast_fig(
 
 \item{ylab}{ylab.}
 
+\item{ylim}{ylim.}
+
+\item{ts_fc_res}{An object already fit.}
+
 \item{...}{auto.arima params.}
 }
 \description{
-Get \mu from ARIMA model.
+Fit a ARIMA model using auto.arima and plot forecast results.
 }

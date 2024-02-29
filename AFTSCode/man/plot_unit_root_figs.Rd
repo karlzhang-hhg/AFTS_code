@@ -2,7 +2,7 @@
 % Please edit documentation in R/arima_plotting_func.R
 \name{plot_unit_root_figs}
 \alias{plot_unit_root_figs}
-\title{Get \mu from ARIMA model.}
+\title{Plot ACF and PACF for unit-roots testing.}
 \usage{
 plot_unit_root_figs(da_ts, freq, start, lag_max, main, xlab, ylab)
 }
@@ -22,5 +22,5 @@ plot_unit_root_figs(da_ts, freq, start, lag_max, main, xlab, ylab)
 \item{ylab}{ylab.}
 }
 \description{
-Get \mu from ARIMA model.
+Plot ACF and PACF for unit-roots testing.
 }
