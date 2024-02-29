@@ -9,13 +9,9 @@ perform_and_print_eacf(da, ar.max, ma.max)
 \arguments{
 \item{da}{An data series.}
 
-\item{lag.max}{An acf param.}
+\item{ar.max}{An eacf param.}
 
-\item{main}{The title of the figure.}
-
-\item{w}{Plot width.}
-
-\item{h}{Plot height.}
+\item{ma.max}{An eacf param.}
 }
 \description{
 Perform and print eacf of a time-series.
