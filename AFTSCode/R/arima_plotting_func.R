@@ -81,7 +81,7 @@ draw_arima_forecast_fig <- function(
     main=NULL, xlab=NULL, ylab=NULL, ylim = NULL
 ) {
     # Plot forecast
-    par(bg = "white")
+    par(mfrow = c(1, 1), bg = "white")
     if (is.null(npts)) {
         npts <- eotr
     }
@@ -202,7 +202,7 @@ plot_arima_forecast_fig <- function(
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
         ts_fc_res <- forecast(ts_fm, h = h)
         par(bg = 'white')
-        tsdiag(ts_fc_res$model, gof = gof)
+        tsdiag1(ts_fc_res$model, gof.lag = gof)
     }
     draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
@@ -281,7 +281,7 @@ plot_auto_arima_forecast_fig <- function(
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
         ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
         par(bg = 'white')
-        tsdiag(ts_fc_res$model, gof = gof)
+        tsdiag1(ts_fc_res$model, gof.lag = gof)
     }
     draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
@@ -386,4 +386,42 @@ perform_and_print_eacf <- function(da, ar.max, ma.max) {
     # pp67, asymptotic standard error of EACF
     display(2/sqrt(length(da)))
     c(eacf_obj, eacf_stats_tb)
+}
+
+#' Perform diagnosis on models (my version).
+#'
+#' @param object Model.
+#' @param gof.lag The lag.max.
+#' @param ... acf params.
+#' @import TSA
+#' @export
+#' @examples
+#' tsdiag1(ew_lrtn_m1, gof.lag = 36, `drop.lag.0` = FALSE)
+#' tsdiag1(ew_lrtn_m1, gof.lag = 36, `drop.lag.0` = TRUE) 
+tsdiag1 <- function(object, gof.lag, ...) {
+    # Specify the range of lags you're interested in
+    lags <- 1:gof.lag
+    p_values <- numeric(length(lags))
+
+    # Compute the Ljung-Box test for each lag
+    for (i in seq_along(lags)) {
+        test_result <- Box.test(object$residuals, lag = lags[i], type = "Ljung-Box")
+        p_values[i] <- test_result$p.value
+    }
+
+    # Plot
+    par(mfrow = c(3, 1), bg = 'white')
+    # Residual
+    std_resi = object$residuals/sqrt(ew_lrtn_m1$sigma2)
+    plot(std_resi, type = 'n', main = "Standardized Residuals", xlab = "Time")
+    segments(x0 = time(std_resi), y0 = 0, x1 = time(std_resi), y1 = std_resi)
+    abline(h = 0, col = "blue", lty = 2, lwd = 1)
+    # acf
+    TSA::acf(as.numeric(object$residuals), lag.max = gof.lag, main = "ACF of Residuals", ...)
+    # Ljung-Box
+    plot(
+        lags, p_values, type = "p", pch = 1, xlab = "Lag", ylab = "p value",
+        main = "p values for Ljung-Box statistics", ylim = c(0, 1)
+    )
+    abline(h = 0.05, col = "blue", lty = 2, lwd = 1)  # Add a line for the common significance level of 0.05
 }
