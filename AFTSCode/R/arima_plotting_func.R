@@ -412,7 +412,7 @@ tsdiag1 <- function(object, gof.lag, ...) {
     # Plot
     par(mfrow = c(3, 1), bg = 'white')
     # Residual
-    std_resi = object$residuals/sqrt(ew_lrtn_m1$sigma2)
+    std_resi = object$residuals/sqrt(object$sigma2)
     plot(std_resi, type = 'n', main = "Standardized Residuals", xlab = "Time")
     segments(x0 = time(std_resi), y0 = 0, x1 = time(std_resi), y1 = std_resi)
     abline(h = 0, col = "blue", lty = 2, lwd = 1)
