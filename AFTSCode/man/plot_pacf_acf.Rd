@@ -12,5 +12,5 @@ plot_pacf_acf(da, freq = NA, ...)
 \item{freq}{A frequency in taking seasonal difference.}
 }
 \description{
-Plot pacf and acf of a time-series.
+Don't pass in "\code{drop.lag.0} = T", b/c pacf doesn't accept this param.
 }
