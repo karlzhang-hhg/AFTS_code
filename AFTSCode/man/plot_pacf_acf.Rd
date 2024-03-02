@@ -4,18 +4,12 @@
 \alias{plot_pacf_acf}
 \title{Plot pacf and acf of a time-series.}
 \usage{
-plot_pacf_acf(da, lag.max = NULL, main = NULL, w = NULL, h = NULL, ...)
+plot_pacf_acf(da, freq = NA, ...)
 }
 \arguments{
-\item{da}{An data series.}
+\item{da}{A data series.}
 
-\item{lag.max}{An acf param.}
-
-\item{main}{The title of the figure.}
-
-\item{w}{Plot width.}
-
-\item{h}{Plot height.}
+\item{freq}{A frequency in taking seasonal difference.}
 }
 \description{
 Plot pacf and acf of a time-series.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/arima_plotting_func.R
 \name{plot_auto_arima_forecast_fig}
 \alias{plot_auto_arima_forecast_fig}
-\title{Fit a ARIMA model using auto.arima and plot forecast results.}
+\title{Fit an ARIMA model using auto.arima and plot forecast results.}
 \usage{
 plot_auto_arima_forecast_fig(
   da_ts,
@@ -48,5 +48,39 @@ plot_auto_arima_forecast_fig(
 \item{...}{auto.arima params.}
 }
 \description{
-Fit a ARIMA model using auto.arima and plot forecast results.
+Fit an ARIMA model using auto.arima and plot forecast results.
+}
+\examples{
+da = read.table("../AFTS_sol/data/d-ibm3dxwkdays8008.txt", header = TRUE)
+da[1:5,]
+ew = da$ew * 100
+ew_ts = ts(ew, frequency = 252, start = c(1980, 1, 2))
+npts = 20
+eotr = length(ew_ts)-npts
+h = npts
+freq = 252
+xreg = as.matrix(da[, 8:11])
+ew_fc_res = plot_auto_arima_forecast_fig(
+    da_ts=ew_ts, eotr=eotr, h=h, npts=npts, frequency=freq,
+    xreg=xreg,
+    main="Forecasts from ARIMA(2,0,2)\nfor CRSP Equal-Weighted Index",
+    xlab="Year", ylab="CRSP Equal-Weighted Index"
+    d=0,
+    D=0,
+    max.p=2,
+    max.q=2,
+    max.P=1,
+    max.Q=0,
+    max.order=5,
+    seasonal=TRUE,
+    method="ML",
+    allowmean=TRUE,
+    stepwise=FALSE,
+    parallel=TRUE,
+    num.cores=12
+)
+summary(ew_fc_res)
+
+ew_fc_tb = comb_forecast_res(ew_fc_res, ew_ts, eotr, freq)
+ew_fc_tb
 }

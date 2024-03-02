@@ -7,7 +7,7 @@
 perform_and_print_eacf(da, ar.max, ma.max)
 }
 \arguments{
-\item{da}{An data series.}
+\item{da}{A data series.}
 
 \item{ar.max}{An eacf param.}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/arima_plotting_func.R
 \name{plot_arima_forecast_fig}
 \alias{plot_arima_forecast_fig}
-\title{Fit a ARIMA model and plot forecast results.}
+\title{Fit an ARIMA model and plot forecast results.}
 \usage{
 plot_arima_forecast_fig(
   da_ts,
@@ -10,18 +10,13 @@ plot_arima_forecast_fig(
   h,
   npts,
   frequency,
-  order,
-  seasonal,
-  fixed,
-  method,
-  include.mean,
-  transform.pars,
   gof = 35,
   main = NULL,
   xlab = NULL,
   ylab = NULL,
   ylim = NULL,
-  ts_fc_res = NULL
+  ts_fc_res = NULL,
+  ...
 )
 }
 \arguments{
@@ -34,18 +29,6 @@ plot_arima_forecast_fig(
 \item{npts}{The number of points at the end of training data to plot.}
 
 \item{frequency}{The frequency of the ts object.}
-
-\item{order}{arima param.}
-
-\item{seasonal}{arima param.}
-
-\item{fixed}{arima param.}
-
-\item{method}{arima param.}
-
-\item{include.mean}{arima param.}
-
-\item{transform.pars}{arima param.}
 
 \item{gof}{The lag for ts result diagnosis (35).}
 
@@ -60,5 +43,40 @@ plot_arima_forecast_fig(
 \item{ts_fc_res}{An object already fit.}
 }
 \description{
-Fit a ARIMA model and plot forecast results.
+Fit an ARIMA model and plot forecast results.
+}
+\examples{
+da = read.table("../AFTS_data/Ch02/q-jnj.txt", header = FALSE) #' needs to set `header = F`
+jnj_er = da$V1
+jnj_lg_er_ts = ts(jnj_lg_er, frequency = freq, start = c(1960, 1))
+npts = 6
+h = 8
+eotr = length(jnj_lg_er_ts)-h
+freq = 4
+order = c(0,1,1) #' From the solution of 2-6
+seasonal = list(order = order, period = freq)
+fixed = NULL
+include.mean = F
+multi_seas_mod_jnj_ts = ts(jnj_lg_er_ts, frequency = freq, start = c(1960, 1))
+multi_seas_mod_jnj_fc_res = plot_arima_forecast_fig(
+    da_ts=multi_seas_mod_jnj_ts, eotr=eotr, h=h, npts=npts, frequency=freq, 
+    main="Forecasts from ARIMA(0,1,1)(0,1,1)[4] with non-zero mean for\n(1-B)(1-B^4)ln(QtlyEarning) = (1-theta*B)(1-Theta*B^4)a_t of JnJ", 
+    xlab="Year", ylab="QtlyEarning", ylim=c(2, 3.2),
+    order=order, 
+    seasonal=seasonal, 
+    fixed=fixed, 
+    method='ML', 
+    include.mean=include.mean, 
+    transform.pars=TRUE
+)
+summary(multi_seas_mod_jnj_fc_res)
+
+multi_seas_mod_jnj_fc_tb = comb_forecast_res(
+    multi_seas_mod_jnj_fc_res, 
+    da_ts = multi_seas_mod_jnj_ts,
+    eotr=eotr,
+    freq=freq
+)
+multi_seas_mod_jnj_fc_df = as.data.frame(multi_seas_mod_jnj_fc_tb)
+multi_seas_mod_jnj_fc_tb
 }

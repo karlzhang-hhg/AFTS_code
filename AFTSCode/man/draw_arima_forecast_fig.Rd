@@ -2,7 +2,7 @@
 % Please edit documentation in R/arima_plotting_func.R
 \name{draw_arima_forecast_fig}
 \alias{draw_arima_forecast_fig}
-\title{Draw a ARIMA model and plot forecast results.}
+\title{Draw an ARIMA model and plot forecast results.}
 \usage{
 draw_arima_forecast_fig(
   da_ts,
@@ -39,5 +39,5 @@ draw_arima_forecast_fig(
 \item{ylim}{ylim.}
 }
 \description{
-Draw a ARIMA model and plot forecast results.
+Draw an ARIMA model and plot forecast results.
 }

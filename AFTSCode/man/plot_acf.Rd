@@ -7,7 +7,7 @@
 plot_acf(da, lag.max = NULL, main = NULL, w = NULL, h = NULL, ...)
 }
 \arguments{
-\item{da}{An data series.}
+\item{da}{A data series.}
 
 \item{lag.max}{An acf param.}
 

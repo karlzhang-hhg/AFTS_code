@@ -62,7 +62,7 @@ get_mu <- function(arima_mod, digits = 6) {
     mu
 }
 
-#' Draw a ARIMA model and plot forecast results.
+#' Draw an ARIMA model and plot forecast results.
 #' 
 #' @param da_ts A ts object.
 #' @param eotr The end index of training data.
@@ -122,59 +122,93 @@ draw_arima_forecast_fig <- function(
     )
 }
 
-#' Fit a ARIMA model and plot forecast results.
+#' Parameter 'seasonal' regeneration for wrapper functions.
+#' 
+#' @return Turn the `seasonal=NULL` to the default value for `arima(...)`.
+arima_seasonal_null_to_default <- function(...) {
+    kwargs <- list(...)
+
+    # Check if 'seasonal' is present
+    if (('seasonal' %in% names(kwargs)) && is.null(kwargs$seasonal)) {
+        # Modify the value of 'seasonal' if it exists and is NULL
+        kwargs$seasonal <- list(order = c(0L, 0L, 0L), period = NA) # default value
+    }
+    
+    return(kwargs)
+}
+
+#' Fit an ARIMA model and plot forecast results.
 #'
 #' @param da_ts A ts object.
 #' @param eotr The end index of training data.
 #' @param h The forecast horizon.
 #' @param npts The number of points at the end of training data to plot.
 #' @param frequency The frequency of the ts object.
-#' @param order arima param.
-#' @param seasonal arima param.
-#' @param fixed arima param.
-#' @param method arima param.
-#' @param include.mean arima param.
-#' @param transform.pars arima param.
 #' @param gof The lag for ts result diagnosis (35).
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
 #' @param ylim ylim.
 #' @param ts_fc_res An object already fit.
-#' @import forecast
+#' @import TSA forecast
 #' @export
+#' @examples
+#' da = read.table("../AFTS_data/Ch02/q-jnj.txt", header = FALSE) #' needs to set `header = F`
+#' jnj_er = da$V1
+#' jnj_lg_er_ts = ts(jnj_lg_er, frequency = freq, start = c(1960, 1))
+#' npts = 6
+#' h = 8
+#' eotr = length(jnj_lg_er_ts)-h
+#' freq = 4
+#' order = c(0,1,1) #' From the solution of 2-6
+#' seasonal = list(order = order, period = freq)
+#' fixed = NULL
+#' include.mean = F
+#' multi_seas_mod_jnj_ts = ts(jnj_lg_er_ts, frequency = freq, start = c(1960, 1))
+#' multi_seas_mod_jnj_fc_res = plot_arima_forecast_fig(
+#'     da_ts=multi_seas_mod_jnj_ts, eotr=eotr, h=h, npts=npts, frequency=freq, 
+#'     main="Forecasts from ARIMA(0,1,1)(0,1,1)[4] with non-zero mean for\n(1-B)(1-B^4)ln(QtlyEarning) = (1-theta*B)(1-Theta*B^4)a_t of JnJ", 
+#'     xlab="Year", ylab="QtlyEarning", ylim=c(2, 3.2),
+#'     order=order, 
+#'     seasonal=seasonal, 
+#'     fixed=fixed, 
+#'     method='ML', 
+#'     include.mean=include.mean, 
+#'     transform.pars=TRUE
+#' )
+#' summary(multi_seas_mod_jnj_fc_res)
+#' 
+#' multi_seas_mod_jnj_fc_tb = comb_forecast_res(
+#'     multi_seas_mod_jnj_fc_res, 
+#'     da_ts = multi_seas_mod_jnj_ts,
+#'     eotr=eotr,
+#'     freq=freq
+#' )
+#' multi_seas_mod_jnj_fc_df = as.data.frame(multi_seas_mod_jnj_fc_tb)
+#' multi_seas_mod_jnj_fc_tb
 plot_arima_forecast_fig <- function(
-    da_ts, eotr, h, npts, frequency,
-    order, seasonal, fixed, method, 
-    include.mean, transform.pars, gof=35,
-    main=NULL, xlab=NULL, ylab=NULL, ylim = NULL,
-    ts_fc_res=NULL
+    da_ts, eotr, h, npts, frequency, gof=35,
+    main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res=NULL,
+    ...
 ) {
     if (is.null(ts_fc_res)) {
         # arima model
-        if (is.null(seasonal)) {seasonal = list(order = c(0L, 0L, 0L), period = NA)} # default value
         tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
-        if (is.null(transform.pars)) {
-            ts_fm <- arima(tr_da_ts, order = order, fixed = fixed, 
-                seasonal = seasonal, method = method, include.mean = include.mean
-            )
-        } else {
-            ts_fm <- arima(tr_da_ts, order = order, fixed = fixed, 
-                seasonal = seasonal, method = method, include.mean = include.mean, 
-                transform.pars = transform.pars
-            )
-        }
+        arima_kwargs <- arima_seasonal_null_to_default(...)
+        arima_kwargs$x <- tr_da_ts
+        ts_fm <- do.call(TSA::arima, arima_kwargs) # TSA::arima
         print(ts_fm$nobs)
         # Forecast
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
         ts_fc_res <- forecast(ts_fm, h = h)
-        tsdiag(ew_fc_res$model, gof = gof)
+        par(bg = 'white')
+        tsdiag(ts_fc_res$model, gof = gof)
     }
     draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
 }
 
-#' Fit a ARIMA model using auto.arima and plot forecast results.
+#' Fit an ARIMA model using auto.arima and plot forecast results.
 #'
 #' @param da_ts A ts object.
 #' @param eotr The end index of training data.
@@ -191,6 +225,39 @@ plot_arima_forecast_fig <- function(
 #' @param ... auto.arima params.
 #' @import forecast
 #' @export
+#' @examples
+#' da = read.table("../AFTS_sol/data/d-ibm3dxwkdays8008.txt", header = TRUE)
+#' da[1:5,]
+#' ew = da$ew * 100
+#' ew_ts = ts(ew, frequency = 252, start = c(1980, 1, 2))
+#' npts = 20
+#' eotr = length(ew_ts)-npts
+#' h = npts
+#' freq = 252
+#' xreg = as.matrix(da[, 8:11])
+#' ew_fc_res = plot_auto_arima_forecast_fig(
+#'     da_ts=ew_ts, eotr=eotr, h=h, npts=npts, frequency=freq,
+#'     xreg=xreg,
+#'     main="Forecasts from ARIMA(2,0,2)\nfor CRSP Equal-Weighted Index",
+#'     xlab="Year", ylab="CRSP Equal-Weighted Index"
+#'     d=0,
+#'     D=0,
+#'     max.p=2,
+#'     max.q=2,
+#'     max.P=1,
+#'     max.Q=0,
+#'     max.order=5,
+#'     seasonal=TRUE,
+#'     method="ML",
+#'     allowmean=TRUE,
+#'     stepwise=FALSE,
+#'     parallel=TRUE,
+#'     num.cores=12
+#' )
+#' summary(ew_fc_res)
+#' 
+#' ew_fc_tb = comb_forecast_res(ew_fc_res, ew_ts, eotr, freq)
+#' ew_fc_tb
 plot_auto_arima_forecast_fig <- function(
     da_ts, eotr, h, npts, frequency, xreg=NULL, 
     gof=35, main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res = NULL,
@@ -207,14 +274,14 @@ plot_auto_arima_forecast_fig <- function(
             fc_xreg <- xreg[(eotr+1):dim(xreg)[1]]
         }
         # arima model
-        if (is.null(seasonal)) {seasonal = list(order = c(0L, 0L, 0L), period = NA)} # default value
         tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
-        ts_fm <- auto.arima(tr_da_ts, xreg = tr_xreg, ...)
+        ts_fm <- auto.arima(tr_da_ts, xreg = tr_xreg, ...) # forecast::auto.arima
         print(ts_fm$nobs)
         # Forecast
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
         ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
-        tsdiag(ew_fc_res$model, gof = gof)
+        par(bg = 'white')
+        tsdiag(ts_fc_res$model, gof = gof)
     }
     draw_arima_forecast_fig(da_ts, eotr, h, npts, frequency, ts_fc_res, main, xlab, ylab, ylim)
     ts_fc_res
@@ -226,9 +293,15 @@ plot_auto_arima_forecast_fig <- function(
 #' @param da_ts An original ts object.
 #' @param eotr The end index of training data.
 #' @param freq The frequency of the ts object.
+#' @param stdout_len_lmt The length limit for printing out summary(forecast_obj) in stdout.
 #' @export
-comb_forecast_res <- function(forecast_obj, da_ts, eotr, freq) {
-    display(summary(forecast_obj))
+comb_forecast_res <- function(forecast_obj, da_ts, eotr, freq, stdout_len_lmt = 5000) {
+    out_len = sum(nchar(capture.output(summary(forecast_obj))))
+    if (out_len <= stdout_len_lmt) {
+        display(summary(forecast_obj))
+    } else {
+        display(paste("The \"summary(forecast_obj)\" call output length", out_len, "exceeds the output limit", stdout_len_lmt, "so that it is suppressed."))
+    }
     fc_std_err <- (forecast_obj$upper[, 2] - forecast_obj$lower[, 2]) / 2 / qnorm(p = 0.975)
     actual_ts <- ts(da_ts[(eotr + 1):length(da_ts)], frequency = freq, start = time(da_ts)[eotr + 1])
     display(forecast_obj$mean)
@@ -260,7 +333,7 @@ plot_unit_root_figs <- function(da_ts, freq, start, lag_max, main, xlab, ylab) {
 
 #' Plot acf of a time-series.
 #'
-#' @param da An data series.
+#' @param da A data series.
 #' @param lag.max An acf param.
 #' @param main The title of the figure.
 #' @param w Plot width.
@@ -277,25 +350,29 @@ plot_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
 
 #' Plot pacf and acf of a time-series.
 #'
-#' @param da An data series.
-#' @param lag.max An acf param.
-#' @param main The title of the figure.
-#' @param w Plot width.
-#' @param h Plot height.
+#' Don't pass in "`drop.lag.0` = T", b/c pacf doesn't accept this param.
+#'
+#' @param da A data series.
+#' @param freq A frequency in taking seasonal difference.
+#' @import TSA
 #' @export
-plot_pacf_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
-    if (is.null(w) | is.null(h)) {
-        par(mfrow = c(2, 1), bg = 'white')
-    } else {
-        par(mfrow = c(2, 1), bg = 'white', pin = c(w, h))
+plot_pacf_acf <- function(da, freq=NA, ...) {
+    par(mfrow = c(2, 1), bg = 'white')
+    pacf(da, ...)
+    TSA::acf(da, ...)
+    pacf(diff(da), ...)
+    TSA::acf(diff(da), ...)
+    if (!is.na(freq)) {
+        pacf(diff(da, freq), ...)
+        TSA::acf(diff(da, freq), ...)
+        pacf(diff(diff(da), freq), ...)
+        TSA::acf(diff(diff(da), freq), ...)
     }
-    plot(pacf(da, lag.max = lag.max, plot = F, ...), main = main)
-    plot(acf(da, lag.max = lag.max, plot = F, ...), main = main)
 }
 
 #' Perform and print eacf of a time-series.
 #'
-#' @param da An data series.
+#' @param da A data series.
 #' @param ar.max An eacf param.
 #' @param ma.max An eacf param.
 #' @import TSA IRdisplay

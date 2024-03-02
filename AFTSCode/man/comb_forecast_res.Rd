@@ -4,7 +4,7 @@
 \alias{comb_forecast_res}
 \title{Combine forecast results.}
 \usage{
-comb_forecast_res(forecast_obj, da_ts, eotr, freq)
+comb_forecast_res(forecast_obj, da_ts, eotr, freq, stdout_len_lmt = 5000)
 }
 \arguments{
 \item{forecast_obj}{A forecast object.}
@@ -14,6 +14,8 @@ comb_forecast_res(forecast_obj, da_ts, eotr, freq)
 \item{eotr}{The end index of training data.}
 
 \item{freq}{The frequency of the ts object.}
+
+\item{stdout_len_lmt}{The length limit for printing out summary(forecast_obj) in stdout.}
 }
 \description{
 Combine forecast results.
