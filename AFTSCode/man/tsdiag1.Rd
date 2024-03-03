@@ -4,7 +4,7 @@
 \alias{tsdiag1}
 \title{Perform diagnosis on models (my version).}
 \usage{
-tsdiag1(object, gof.lag, ...)
+tsdiag1(object, gof.lag = 30, ...)
 }
 \arguments{
 \item{object}{Model.}

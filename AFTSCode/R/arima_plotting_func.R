@@ -398,7 +398,7 @@ perform_and_print_eacf <- function(da, ar.max, ma.max) {
 #' @examples
 #' tsdiag1(ew_lrtn_m1, gof.lag = 36, `drop.lag.0` = FALSE)
 #' tsdiag1(ew_lrtn_m1, gof.lag = 36, `drop.lag.0` = TRUE) 
-tsdiag1 <- function(object, gof.lag, ...) {
+tsdiag1 <- function(object, gof.lag = 30, ...) {
     # Specify the range of lags you're interested in
     lags <- 1:gof.lag
     p_values <- numeric(length(lags))
