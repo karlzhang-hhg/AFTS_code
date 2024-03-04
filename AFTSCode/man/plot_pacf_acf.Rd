@@ -14,3 +14,6 @@ plot_pacf_acf(da, freq = NA, ...)
 \description{
 Don't pass in "\code{drop.lag.0} = T", b/c pacf doesn't accept this param.
 }
+\examples{
+plot_pacf_acf(diff(gdpdef), lag.max = lag.max, xlim = c(0, lag.max))
+}

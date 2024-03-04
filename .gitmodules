@@ -1,0 +1,3 @@
+[submodule "R_src/forecast"]
+	path = R_src/forecast
+	url = https://github.com/robjhyndman/forecast.git

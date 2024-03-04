@@ -7,7 +7,7 @@
 arima_seasonal_null_to_default(...)
 }
 \value{
-Turn the \code{seasonal=NULL} to the default value for \code{arima(...)}.
+Turn the \code{seasonal=NULL} to the default value for \code{arima(...)} and return a named list.
 }
 \description{
 Parameter 'seasonal' regeneration for wrapper functions.

@@ -10,7 +10,8 @@ plot_arima_forecast_fig(
   h,
   npts,
   frequency,
-  gof = 35,
+  xreg = NULL,
+  gof = 36,
   main = NULL,
   xlab = NULL,
   ylab = NULL,
@@ -30,7 +31,9 @@ plot_arima_forecast_fig(
 
 \item{frequency}{The frequency of the ts object.}
 
-\item{gof}{The lag for ts result diagnosis (35).}
+\item{xreg}{arima param (data.frame).}
+
+\item{gof}{The lag for ts result diagnosis (36).}
 
 \item{main}{The title of the figure.}
 

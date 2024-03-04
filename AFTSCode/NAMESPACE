@@ -2,6 +2,7 @@
 
 export(cal_phi_0)
 export(comb_forecast_res)
+export(deep_copy)
 export(draw_arima_forecast_fig)
 export(get_mu)
 export(install_redir_output)

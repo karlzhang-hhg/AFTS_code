@@ -94,7 +94,7 @@ draw_arima_forecast_fig <- function(
     # Plot forecast mean (prepend the last observed data in the training dataset)
     dummy_1st_fmean_ts <- ts(c(c(da_ts[eotr]), as.numeric(ts_fc_res$mean)), frequency = frequency, start = end(tr_da_ts))
     # # Label -: NULL
-    lines(dummy_1st_fmean_ts)
+    lines(dummy_1st_fmean_ts, col = "red")
     # # Label 2: Forecast Mean
     points(dummy_1st_fmean_ts, pch = 1)
     # Plot confidence interval (95%)
@@ -124,7 +124,7 @@ draw_arima_forecast_fig <- function(
 
 #' Parameter 'seasonal' regeneration for wrapper functions.
 #' 
-#' @return Turn the `seasonal=NULL` to the default value for `arima(...)`.
+#' @return Turn the `seasonal=NULL` to the default value for `arima(...)` and return a named list.
 arima_seasonal_null_to_default <- function(...) {
     kwargs <- list(...)
 
@@ -144,7 +144,8 @@ arima_seasonal_null_to_default <- function(...) {
 #' @param h The forecast horizon.
 #' @param npts The number of points at the end of training data to plot.
 #' @param frequency The frequency of the ts object.
-#' @param gof The lag for ts result diagnosis (35).
+#' @param xreg arima param (data.frame).
+#' @param gof The lag for ts result diagnosis (36).
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
@@ -187,20 +188,37 @@ arima_seasonal_null_to_default <- function(...) {
 #' multi_seas_mod_jnj_fc_df = as.data.frame(multi_seas_mod_jnj_fc_tb)
 #' multi_seas_mod_jnj_fc_tb
 plot_arima_forecast_fig <- function(
-    da_ts, eotr, h, npts, frequency, gof=35,
+    da_ts, eotr, h, npts, frequency, xreg=NULL, gof=36,
     main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res=NULL,
     ...
 ) {
     if (is.null(ts_fc_res)) {
+        if (is.null(xreg)) {
+            tr_xreg <- NULL
+            fc_xreg <- NULL
+        } else {
+            stopifnot("xreg should be of type matrix and numeric"=(is.matrix(xreg) && is.numeric(xreg)))
+            stopifnot("length(da_ts)!=dim(xreg)[1]"=(length(da_ts)==dim(xreg)[1]))
+            tr_xreg <- xreg[1:eotr]
+            fc_xreg <- xreg[(eotr+1):dim(xreg)[1]]
+        }
         # arima model
         tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
         arima_kwargs <- arima_seasonal_null_to_default(...)
-        arima_kwargs$x <- tr_da_ts
-        ts_fm <- do.call(TSA::arima, arima_kwargs) # TSA::arima
+        arima_kwargs$y <- tr_da_ts
+        if (!is.null(xreg)) {
+            arima_kwargs$xreg <- tr_xreg
+        }
+        # Using TSA::arima won't be able to use the xreg in forecast.
+        ts_fm <- do.call(forecast::Arima, arima_kwargs)
         print(ts_fm$nobs)
         # Forecast
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
-        ts_fc_res <- forecast(ts_fm, h = h)
+        if (is.null(xreg)) {
+            ts_fc_res <- forecast(ts_fm, h = h)
+        } else {
+            ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
+        }
         par(bg = 'white')
         tsdiag1(ts_fc_res$model, gof.lag = gof)
     }
@@ -216,7 +234,7 @@ plot_arima_forecast_fig <- function(
 #' @param npts The number of points at the end of training data to plot.
 #' @param frequency The frequency of the ts object.
 #' @param xreg arima param (data.frame).
-#' @param gof The lag for ts result diagnosis (35).
+#' @param gof The lag for ts result diagnosis (36).
 #' @param main The title of the figure.
 #' @param xlab xlab.
 #' @param ylab ylab.
@@ -260,7 +278,7 @@ plot_arima_forecast_fig <- function(
 #' ew_fc_tb
 plot_auto_arima_forecast_fig <- function(
     da_ts, eotr, h, npts, frequency, xreg=NULL, 
-    gof=35, main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res = NULL,
+    gof=36, main=NULL, xlab=NULL, ylab=NULL, ylim = NULL, ts_fc_res = NULL,
     ...
 ) {
     if (is.null(ts_fc_res)) {
@@ -268,18 +286,50 @@ plot_auto_arima_forecast_fig <- function(
             tr_xreg <- NULL
             fc_xreg <- NULL
         } else {
-            stopifnot("xreg should be of type matrix"=(is.matrix(xreg)))
+            stopifnot("xreg should be of type matrix and numeric"=(is.matrix(xreg) && is.numeric(xreg)))
             stopifnot("length(da_ts)!=dim(xreg)[1]"=(length(da_ts)==dim(xreg)[1]))
             tr_xreg <- xreg[1:eotr]
             fc_xreg <- xreg[(eotr+1):dim(xreg)[1]]
         }
         # arima model
         tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
-        ts_fm <- auto.arima(tr_da_ts, xreg = tr_xreg, ...) # forecast::auto.arima
+        if (is.null(xreg)) {
+            # If I don't do this, I will get:
+            # 
+            # Error in eval(expr, p): object 'tr_xreg' not found
+            # Traceback:
+
+            # 1. plot_auto_arima_forecast_fig(da_ts = lg_gdpdef_ts, eotr = eotr, 
+            # .     h = h, npts = npts, frequency = freq, main = NULL, xlab = "Year", 
+            # .     ylab = "lg(GDP Deflator)", ylim = c(4.7, 4.9), d = NA, D = 0, 
+            # .     max.p = 6, max.d = 3, max.q = 6, max.P = 0, max.Q = 0, max.order = 12, 
+            # .     seasonal = TRUE, method = "ML", allowmean = TRUE, stepwise = FALSE, 
+            # .     parallel = TRUE, num.cores = 4)
+            # 2. forecast(ts_fm, h = h, xreg = fc_xreg)   # at line 26 of file <text>
+            # 3. forecast.forecast_ARIMA(ts_fm, h = h, xreg = fc_xreg)
+            # 4. predict(object, n.ahead = h)
+            # 5. predict.Arima(object, n.ahead = h)
+            # 6. eval.parent(xr)
+            # 7. eval(expr, p)
+            # 8. eval(expr, p)
+            # 
+            # This is because in the `predict.Arima`, we call `eval.parent(xr)`, where `xr <- object$call$xreg`.
+            # Seems that if we assign NULL to a variable and pass it as xreg, it will not be exposed to the 
+            # inner call environment and `predict.Arima` cannot find it. If I define a global variable `temp=NULL`
+            # and pass it to the `auto.arima`, `eval.parent(xr)` works. So here, we have top explicitly pass `NULL`,
+            # instead of some local variable that evaluates as a NULL.
+            ts_fm <- auto.arima(tr_da_ts, ...) # forecast::auto.arima
+        } else {
+            ts_fm <- auto.arima(tr_da_ts, xreg = tr_xreg, ...) # forecast::auto.arima
+        }
         print(ts_fm$nobs)
         # Forecast
         ts_fm$x <- tr_da_ts # https://stackoverflow.com/a/42464130/4307919
-        ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
+        if (is.null(xreg)) {
+            ts_fc_res <- forecast(ts_fm, h = h)
+        } else {
+            ts_fc_res <- forecast(ts_fm, h = h, xreg = fc_xreg)
+        }
         par(bg = 'white')
         tsdiag1(ts_fc_res$model, gof.lag = gof)
     }
@@ -356,6 +406,8 @@ plot_acf <- function(da, lag.max = NULL, main=NULL, w=NULL, h=NULL, ...) {
 #' @param freq A frequency in taking seasonal difference.
 #' @import TSA
 #' @export
+#' @examples 
+#' plot_pacf_acf(diff(gdpdef), lag.max = lag.max, xlim = c(0, lag.max))
 plot_pacf_acf <- function(da, freq=NA, ...) {
     par(mfrow = c(2, 1), bg = 'white')
     pacf(da, ...)
