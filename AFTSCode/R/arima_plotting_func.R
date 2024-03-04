@@ -353,12 +353,25 @@ comb_forecast_res <- function(forecast_obj, da_ts, eotr, freq, stdout_len_lmt = 
         display(paste("The \"summary(forecast_obj)\" call output length", out_len, "exceeds the output limit", stdout_len_lmt, "so that it is suppressed."))
     }
     fc_std_err <- (forecast_obj$upper[, 2] - forecast_obj$lower[, 2]) / 2 / qnorm(p = 0.975)
-    actual_ts <- ts(da_ts[(eotr + 1):length(da_ts)], frequency = freq, start = time(da_ts)[eotr + 1])
     display(forecast_obj$mean)
     display(fc_std_err)
-    display(actual_ts)
-    multistep_ahead_forecast_tb <- cbind(forecast_obj$mean, fc_std_err, actual_ts)
-    dimnames(multistep_ahead_forecast_tb)[[2]] <- c("Forecast", "Std. Error", "Actual")
+    if (eotr + 1<=length(da_ts)) {
+        actual_ts <- ts(da_ts[(eotr + 1):length(da_ts)], frequency = freq, start = time(da_ts)[eotr + 1])
+        display(actual_ts)
+        err_msg = sprintf(
+            "The forecast$mean start time (%s) and actual values start time (%s) should be the same time", 
+            paste(start(forecast_obj$mean), collapse = ","),
+            paste(start(actual_ts), collapse = ",")
+        )
+        if (!all(start(forecast_obj$mean) == start(actual_ts))) {
+            stop(err_msg)
+        }
+        multistep_ahead_forecast_tb <- cbind(forecast_obj$mean, fc_std_err, actual_ts)
+        dimnames(multistep_ahead_forecast_tb)[[2]] <- c("Forecast", "Std. Error", "Actual")
+    } else {
+        multistep_ahead_forecast_tb <- cbind(forecast_obj$mean, fc_std_err)
+        dimnames(multistep_ahead_forecast_tb)[[2]] <- c("Forecast", "Std. Error")
+    }
     multistep_ahead_forecast_tb
 }
 
