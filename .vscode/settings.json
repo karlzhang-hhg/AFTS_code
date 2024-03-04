@@ -5,6 +5,6 @@
         "editor.defaultFormatter": "REditorSupport.r"
     },
     "r.lsp.diagnostics": false,
-    "r.lsp.enabled": false,
+    "r.lsp.enabled": true,
     "r.rterm.linux": "",
 }
