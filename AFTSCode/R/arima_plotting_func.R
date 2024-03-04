@@ -2,6 +2,7 @@ library(fUnitRoots)
 library(TSA)
 library(forecast)
 library(IRdisplay)
+library(logger)
 
 #' Install a package and direct output to a log file.
 #'
@@ -203,6 +204,11 @@ plot_arima_forecast_fig <- function(
             fc_xreg <- xreg[(eotr+1):dim(xreg)[1]]
         }
         # arima model
+        if (eotr > length(da_ts)) {
+            err_msg = sprintf("The eotr (end-of-training) (%d) should not be larger than length(da_ts) (%d).", eotr, length(da_ts))
+            log_error(err_msg)
+            stop(err_msg)
+        }
         tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
         arima_kwargs <- arima_seasonal_null_to_default(...)
         arima_kwargs$y <- tr_da_ts
@@ -241,7 +247,7 @@ plot_arima_forecast_fig <- function(
 #' @param ylim ylim.
 #' @param ts_fc_res An object already fit.
 #' @param ... auto.arima params.
-#' @import forecast
+#' @import forecast logger
 #' @export
 #' @examples
 #' da = read.table("../AFTS_sol/data/d-ibm3dxwkdays8008.txt", header = TRUE)
@@ -292,6 +298,11 @@ plot_auto_arima_forecast_fig <- function(
             fc_xreg <- xreg[(eotr+1):dim(xreg)[1]]
         }
         # arima model
+        if (eotr > length(da_ts)) {
+            err_msg = sprintf("The eotr (end-of-training) (%d) should not be larger than length(da_ts) (%d).", eotr, length(da_ts))
+            log_error(err_msg)
+            stop(err_msg)
+        }
         tr_da_ts <- ts(da_ts[1:eotr], frequency = frequency, start = start(da_ts))
         if (is.null(xreg)) {
             # If I don't do this, I will get:
